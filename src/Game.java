@@ -16,8 +16,11 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
 
     // Constantes
     public static final int TILE_SIZE = 16;
-    public static final int VIEW_W = 800;
-    public static final int VIEW_H = 600;
+    public static final int BASE_W = 800;
+    public static final int BASE_H = 600;
+    public static int VIEW_W = 800;
+    public static int VIEW_H = 600;
+    public static int PIXEL_SCALE = 2; // Se ajusta automáticamente para Chromebooks HiDPI
     public static final int TICKS_PER_SEC = 20;
     public static final int FPS = 60;
     public static final long TICK_INTERVAL = 1000 / TICKS_PER_SEC;
@@ -91,10 +94,24 @@ public class Game extends JPanel implements ActionListener, MouseMotionListener,
 
     /** Inicializa y arranca el juego */
     public void iniciar() {
+        // Detectar escala para pantallas HiDPI (Chromebooks modernos)
+        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        DisplayMode dm = gd.getDisplayMode();
+        if (dm.getHeight() >= 1080) {
+            PIXEL_SCALE = 3;
+        } else if (dm.getHeight() >= 900) {
+            PIXEL_SCALE = 2;
+        } else {
+            PIXEL_SCALE = 2;
+        }
+        VIEW_W = BASE_W * PIXEL_SCALE / 2;
+        VIEW_H = BASE_H * PIXEL_SCALE / 2;
+
         frame = new JFrame("2D Minecraft");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setResizable(false);
+        frame.setResizable(true);
         this.setPreferredSize(new Dimension(VIEW_W, VIEW_H));
+        this.setMinimumSize(new Dimension(400, 300));
         this.setFocusable(true);
         this.addKeyListener(this);
         this.addMouseListener(this);
